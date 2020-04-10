@@ -14,6 +14,39 @@ public class GameManager : MonoBehaviour
     public GameObject groupLight;
     [Header("會動的寶箱")]
     public Transform chest;
+    [Header("喇叭")]
+    public AudioSource aud;
+    [Header("木板上滑動音效")]
+    public AudioClip soundWoodMove;
+    [Header("敲門音效")]
+    public AudioClip soundKnock;
+    [Header("開門音效")]
+    public AudioClip soundOpen;
+    [Header("門的動畫控制器")]
+    public Animator aniDoor;
+
+    private int countDoor;     //看到門的次數
+
+    public int countChest;     //看到寶箱的次數
+
+    /// <summary>
+    /// 看到門
+    /// </summary>
+    public void LookDoor()
+    {
+        countDoor++;
+
+        //如果 看到門的次數 等於1
+        if (countDoor == 1)
+        {
+            aud.PlayOneShot(soundKnock, 5);
+        }
+        else if (countDoor == 2)
+        {
+            aud.PlayOneShot(soundOpen, 4.5f);
+            aniDoor.SetTrigger("開門觸發器");
+        }
+    }
 
     //定義方法 (Method):有特定內容功能
     //修飾詞 傳回類型 方法名稱 () { 敘述 }
@@ -51,6 +84,13 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     public IEnumerator MoveChest()
     {
+        // GetComponent<泛型>() 取得元件 : 可以取得物件在屬性面板上的所有元件
+        // enable 元件啟動或停止 : true 啟動 false 停止
+        chest.GetComponent<CapsuleCollider>().enabled = false;
+
+        // 喇叭.播放一次音效(音效 音量)
+        aud.PlayOneShot(soundWoodMove, 2.5f);
+
         //前 :forward
         //右 :right
         //上 :up
@@ -62,9 +102,7 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
 
         }
-        // GetComponent<泛型>() 取得元件 : 可以取得物件在屬性面板上的所有元件
-        // enable 元件啟動或停止 : true 啟動 false 停止
-        chest.GetComponent<CapsuleCollider>().enabled = false;
+
     }
 
     //事件:開始 - 播放時執行一次 , 初始化或遊戲開始需要的內容
